@@ -28,8 +28,5 @@ Black Dashed Line: Indicates the RMSE (Root Mean Square Error),
 which is the average error over the entire simulation. A lower RMSE indicates better tracking performance.
 
 Interpretation: You will likely see the error fluctuate as the noise varies, but it should generally stay low, demonstrating that the sensor fusion is successfully mitigating the noise from the individual sensors.
+
 <img width="568" height="394" alt="{BA198758-C892-43B2-931A-136508501103}" src="https://github.com/user-attachments/assets/20400868-9ae4-4948-8136-da5ed41fc2dd" />
-
-
-
-
