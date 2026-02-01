@@ -41,13 +41,13 @@ This library implements a **Differentiable Extended Kalman Filter (DEKF)** that:
 │           ├──────────────────────┐                      │
 │           │                      │                      │
 │           ▼                      ▼                      │
-│  ┌──────────────────┐   ┌──────────────────┐          │
-│  │   Q-Network      │   │  Standard EKF    │          │
-│  │   (dfdx MLP)     │   │   (nalgebra)     │          │
-│  │                  │   │                  │          │
-│  │  Input: y (4D)   │   │  x = Fx + Bu     │          │
-│  │  Output: Q_diag  │   │  P = FPF^T + Q   │          │
-│  └──────────────────┘   └──────────────────┘          │
+│  ┌──────────────────┐   ┌──────────────────┐            │
+│  │   Q-Network      │   │  Standard EKF    │            │
+│  │   (dfdx MLP)     │   │   (nalgebra)     │            │
+│  │                  │   │                  │            │
+│  │  Input: y (4D)   │   │  x = Fx + Bu     │            │
+│  │  Output: Q_diag  │   │  P = FPF^T + Q   │            │
+│  └──────────────────┘   └──────────────────┘            │
 │           │                      │                      │
 │           └──────────┬───────────┘                      │
 │                      ▼                                  │
