@@ -4,6 +4,7 @@
 
 use nalgebra::{DMatrix, DVector};
 use dfdx::prelude::*;
+use dfdx::optim::Adam;
 use crate::ekf::ExtendedKalmanFilter;
 use crate::q_network::{QNetwork, QNetworkModel};
 
@@ -108,7 +109,7 @@ impl DifferentiableEKF {
         let gt_tensor = dev.tensor(gt_f32);
         
         // Forward pass through Q-network
-        let q_diag_pred = self.q_network.model.forward(innovation_tensor.traced(self.q_network.model.alloc_grads()));
+        let q_diag_pred = self.q_network.model.forward(innovation_tensor.retaped());
         
         // Get current EKF state prediction
         let state_pred_f32: [f32; 4] = [
@@ -117,12 +118,11 @@ impl DifferentiableEKF {
             self.ekf.state[2] as f32,
             self.ekf.state[3] as f32,
         ];
-        let state_tensor = dev.tensor(state_pred_f32);
+        let state_tensor = dev.tensor(state_pred_f32).retaped();
         
         // Compute MSE loss between predicted state and ground truth
         let diff = state_tensor - gt_tensor;
-        let squared = diff.clone() * diff;
-        let mse = squared.mean();
+        let mse = (diff.clone() * diff).mean();
         
         // Backward pass
         let loss_value = mse.array();
