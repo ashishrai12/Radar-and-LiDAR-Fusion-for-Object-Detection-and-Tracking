@@ -6,7 +6,6 @@ use nalgebra::{DMatrix, DVector};
 use dfdx::prelude::*;
 use dfdx::optim::Adam;
 use crate::ekf::ExtendedKalmanFilter;
-use crate::ekf::ExtendedKalmanFilter;
 use crate::q_network::{QNetwork, QNetworkModel};
 
 /// Differentiable EKF that adapts process noise using a neural network
