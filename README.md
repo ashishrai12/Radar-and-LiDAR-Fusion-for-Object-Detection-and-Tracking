@@ -68,8 +68,36 @@ graph TD
 │                      │                                  │
 │                      ▼                                  │
 │              Backprop & Update Q-Network                │
-│└────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────┘
 ```
+
+## Mathematical Foundation
+
+### 1. Classical Extended Kalman Filter
+The EKF handles state transitions and measurements. In the provided example, we use a Constant Velocity (CV) model:
+
+**State Vector**:
+$$x = [p_x, p_y, v_x, v_y]^T$$
+
+**Prediction Step**:
+- State Prediction: $\hat{x}_{k|k-1} = F_k \hat{x}_{k-1|k-1} + B_k u_k$
+- Covariance Prediction: $P_{k|k-1} = F_k P_{k-1|k-1} F_k^T + Q_k$
+
+**Update Step**:
+- Innovation: $\tilde{y}_k = z_k - H_k \hat{x}_{k|k-1}$
+- Innovation Covariance: $S_k = H_k P_{k|k-1} H_k^T + R_k$
+- Kalman Gain: $K_k = P_{k|k-1} H_k^T S_k^{-1}$
+- State Update: $\hat{x}_{k|k} = \hat{x}_{k|k-1} + K_k \tilde{y}_k$
+- Covariance Update: $P_{k|k} = (I - K_k H_k) P_{k|k-1}$
+
+### 2. Differentiable Noise Estimation
+Instead of using a fixed Process Noise matrix $Q$, we dynamically estimate it based on the filter's innovation residuals:
+
+$$Q_k = \text{diag}(\text{NN}_{\theta}(\tilde{y}_k))$$
+
+Where $\text{NN}_{\theta}$ is a Multi-Layer Perceptron (MLP). Because the EKF equations are implemented using differentiable tensors, we can optimize the network weights $\theta$ end-to-end to minimize the trajectory error:
+
+$$\mathcal{L} = \frac{1}{N} \sum_{i=1}^N ||\hat{x}_{k|k} - x_{GT}||^2$$
 
 ### Quick Start
 
