@@ -5,6 +5,7 @@
 use nalgebra::{DMatrix, DVector};
 use dfdx::prelude::*;
 use dfdx::optim::Adam;
+use dfdx::nn::WeightDecay;
 use crate::ekf::ExtendedKalmanFilter;
 use crate::q_network::{QNetwork, QNetworkModel};
 

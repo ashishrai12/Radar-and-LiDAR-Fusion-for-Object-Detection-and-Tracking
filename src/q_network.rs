@@ -4,6 +4,7 @@
 //! from innovation residuals.
 
 use dfdx::prelude::*;
+use dfdx::nn::Softplus;
 
 /// Type alias for the Q-Network architecture
 /// Input: Innovation residual vector
