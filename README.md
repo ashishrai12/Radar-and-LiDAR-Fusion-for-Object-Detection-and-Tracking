@@ -3,57 +3,89 @@
 [![Rust CI](https://github.com/ashishrai12/Radar-and-LiDAR-Fusion-for-Object-Detection-and-Tracking/actions/workflows/rust-ci.yml/badge.svg)](https://github.com/ashishrai12/Radar-and-LiDAR-Fusion-for-Object-Detection-and-Tracking/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A comprehensive multi-platform implementation of sensor fusion for robotic state estimation, featuring classical MATLAB simulations and modern differentiable Rust implementations.
+A high-performance Rust library for robotic state estimation, featuring a Differentiable Extended Kalman Filter (DEKF) with neural-network-driven adaptive noise estimation. This project also includes a classical MATLAB simulation for visualization and benchmarking.
 
 ## Overview
 
-This repository demonstrates the integration of **Radar** and **LiDAR** sensor data to perform robust object detection and tracking. By combining Radar's reliable distance measurement with LiDAR's high-precision 3D spatial data, the system achieves accurate state estimation utilizing both classical and AI-augmented techniques.
+This library implements a **Differentiable Extended Kalman Filter (DEKF)** that:
 
-### Key Features
-- **MATLAB Simulation**: Real-time visualization of 2D/3D tracking with Kalman Filter.
-- **Differentiable Rust EKF**: A high-performance Rust library implementing a Differentiable Extended Kalman Filter (DEKF) with neural-network-driven adaptive noise estimation.
-- **Multi-Sensor Fusion**: Seamlessly integrates disparate data sources for improved resilience against sensor noise.
-
----
+1.  **Standard EKF**: Uses `nalgebra` for efficient linear algebra operations in the prediction ($x = Fx + Bu$) and update steps.
+2.  **Adaptive Q-Network**: Employs `dfdx` to create a small neural network that predicts the diagonal elements of the Process Noise matrix $Q$ from innovation residuals.
+3.  **Learning**: Provides a `train_step` function that minimizes Mean Squared Error (MSE) between predicted states and high-resolution LiDAR ground truth.
 
 ## Project Structure
 
 ```text
 .
+├── src/                # Core Rust DEKF implementation
+├── examples/           # Rust usage examples
+├── tests/              # Rust integration tests
 ├── matlab/             # MATLAB Simulation & Visualization
-│   └── RadarLidarFusion.m
-├── rust/               # Rust Differentiable EKF Library
-│   ├── src/            # Core DEKF implementation (dfdx + nalgebra)
-│   └── tests/          # Integration and unit tests
-├── docs/               # Technical documentation & architecture diagrams
+├── docs/               # Technical documentation
 ├── data/               # Sample sensor datasets
-├── scripts/            # Utility scripts for data processing
-└── LICENSE
+├── scripts/            # Utility scripts
+└── Cargo.toml          # Rust package configuration
 ```
 
----
+## Rust Library (Main Focus)
 
-## Modules
+### Architecture
 
-### 1. MATLAB Simulation
-Located in `/matlab`, this script provides a high-fidelity simulation of an object moving in 3D space, tracked by both Radar and LiDAR.
+```text
+┌─────────────────────────────────────────────────────────┐
+│                    DEKF Pipeline                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Innovation Residual (y = z - Hx)                       │
+│           │                                             │
+│           ├──────────────────────┐                      │
+│           │                      │                      │
+│           ▼                      ▼                      │
+│  ┌──────────────────┐   ┌──────────────────┐          │
+│  │   Q-Network      │   │  Standard EKF    │          │
+│  │   (dfdx MLP)     │   │   (nalgebra)     │          │
+│  │                  │   │                  │          │
+│  │  Input: y (4D)   │   │  x = Fx + Bu     │          │
+│  │  Output: Q_diag  │   │  P = FPF^T + Q   │          │
+│  └──────────────────┘   └──────────────────┘          │
+│           │                      │                      │
+│           └──────────┬───────────┘                      │
+│                      ▼                                  │
+│           Adaptive State Prediction                     │
+│                      │                                  │
+│                      ▼                                  │
+│              MSE Loss vs Ground Truth                   │
+│                      │                                  │
+│                      ▼                                  │
+│              Backprop & Update Q-Network                │
+│└────────────────────────────────────────────────────────┘
+```
 
-- **Left Panel**: 2D Top-Down Tracking (Ground Truth vs. Radar ROI vs. Fused Track).
-- **Right Panel**: 3D Environment Visualization.
-- **Performance**: Real-time RMSE calculation to quantify tracking accuracy.
+### Quick Start
 
-[View MATLAB README](./matlab/README.md) (Optional: Create this if needed)
+```rust
+use rust_fusion::DifferentiableEKF;
+use nalgebra::{DMatrix, DVector};
 
-### 2. Rust Differentiable EKF
-Located in `/rust`, this library pushes sensor fusion further by using a neural network (`dfdx`) to adaptively predict the Process Noise matrix ($Q$) based on innovation residuals.
+// Create DEKF for 4D state (x, y, vx, vy), 2D measurement, 1D control
+let mut dekf = DifferentiableEKF::new(4, 2, 1);
 
-- **High Performance**: Built with `nalgebra` for optimized linear algebra.
-- **Adaptive**: Learns to handle non-stationary noise environments.
-- **Tested**: Comprehensive test suite for mathematical correctness.
+// ... set up matrices and run prediction/update ...
+```
 
-[View Rust README](./rust/README.md)
+To run the provided radar-lidar fusion example:
+```bash
+cargo run --example radar_lidar_fusion
+```
 
----
+## MATLAB Simulation
+
+Located in `/matlab`, this script provides a high-fidelity visualization of the fusion process.
+
+- **Real-time Tracking**: Visualizes ground truth vs. sensor detections vs. fused path.
+- **Error Analysis**: Quantifies performance with RMSE plots.
+
+[View MATLAB Documentation](./matlab/README.md)
 
 ## Performance Visualization
 
@@ -63,11 +95,9 @@ Located in `/rust`, this library pushes sensor fusion further by using a neural 
 ### Error Analysis
 <img width="568" height="394" alt="Tracking Performance" src="https://github.com/user-attachments/assets/20400868-9ae4-4948-8136-da5ed41fc2dd" />
 
----
-
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## License
 

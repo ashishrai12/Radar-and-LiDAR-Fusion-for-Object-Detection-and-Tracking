@@ -1,6 +1,5 @@
-# Rust
-/rust/target/
-/rust/Cargo.lock
+/target/
+/Cargo.lock
 
 # MATLAB
 *.asv
