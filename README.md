@@ -1,32 +1,74 @@
-# Radar-and-LiDAR-Fusion-for-Object-Detection-and-Tracking
-Radar and LiDAR Fusion for Object Detection and Tracking
+# Radar and LiDAR Fusion for Object Detection and Tracking
 
-This project is a MATLAB simulation that integrates **Radar** and **LiDAR** sensor data to perform robust object detection and tracking. By combining the strengths of both sensors—Radar's reliability in distance measurement and LiDAR's high-precision 3D spatial data—the system achieves accurate state estimation using a **Kalman Filter**.
+[![Rust CI](https://github.com/ashishrai12/Radar-and-LiDAR-Fusion-for-Object-Detection-and-Tracking/actions/workflows/rust-ci.yml/badge.svg)](https://github.com/ashishrai12/Radar-and-LiDAR-Fusion-for-Object-Detection-and-Tracking/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Radar & LiDAR Sensor Fusion
-This is the main visualization window, split into two panels to show the tracking in real-time.
+A comprehensive multi-platform implementation of sensor fusion for robotic state estimation, featuring classical MATLAB simulations and modern differentiable Rust implementations.
 
-Left Panel: 2D Tracking (Top-Down)
+## Overview
 
-Black Dashed Line: The Ground Truth path of the object (the actual spiral path the vehicle is taking).
-Red Dashed Circle: Represents the Radar Region of Interest, visualizing the uncertainty area of the radar sensor.
-Red 'X': The specific noisy Radar Detection for the current time step.
-Blue Dots: The LiDAR Point Cloud, showing a cluster of points detected around the object.
-Green Line: The Fused Track, which is the Kalman Filter's estimated path combining both sensors. You should see this line closely following the black ground truth line, smoothing out the noise.
-Right Panel: 3D Sensor Fusion Environment
+This repository demonstrates the integration of **Radar** and **LiDAR** sensor data to perform robust object detection and tracking. By combining Radar's reliable distance measurement with LiDAR's high-precision 3D spatial data, the system achieves accurate state estimation utilizing both classical and AI-augmented techniques.
 
-Displays the same data but in a 3D perspective.
-This view helps visualize the vertical movement (altitude changes) of the object, which is captured by the LiDAR sensor and the 3D tracking model.
-It shows how the fusion algorithm handles movement in all three dimensions (X, Y, Z).
-<img width="1237" height="552" alt="{5B64B7B2-FE95-4FD3-8938-9428CA96DEB6}" src="https://github.com/user-attachments/assets/1e64c686-0e35-4440-9114-8e30bca4e5fe" />
+### Key Features
+- **MATLAB Simulation**: Real-time visualization of 2D/3D tracking with Kalman Filter.
+- **Differentiable Rust EKF**: A high-performance Rust library implementing a Differentiable Extended Kalman Filter (DEKF) with neural-network-driven adaptive noise estimation.
+- **Multi-Sensor Fusion**: Seamlessly integrates disparate data sources for improved resilience against sensor noise.
 
-Tracking Performance
-This figure appears at the end of the simulation to quantify how well the system performed.
+---
 
-Red Line: Shows the Position Error (in meters) at every time step. This is the distance between the estimated position and the actual ground truth position.
-Black Dashed Line: Indicates the RMSE (Root Mean Square Error),
-which is the average error over the entire simulation. A lower RMSE indicates better tracking performance.
+## Project Structure
 
-Interpretation: You will likely see the error fluctuate as the noise varies, but it should generally stay low, demonstrating that the sensor fusion is successfully mitigating the noise from the individual sensors.
+```text
+.
+├── matlab/             # MATLAB Simulation & Visualization
+│   └── RadarLidarFusion.m
+├── rust/               # Rust Differentiable EKF Library
+│   ├── src/            # Core DEKF implementation (dfdx + nalgebra)
+│   └── tests/          # Integration and unit tests
+├── docs/               # Technical documentation & architecture diagrams
+├── data/               # Sample sensor datasets
+├── scripts/            # Utility scripts for data processing
+└── LICENSE
+```
 
-<img width="568" height="394" alt="{BA198758-C892-43B2-931A-136508501103}" src="https://github.com/user-attachments/assets/20400868-9ae4-4948-8136-da5ed41fc2dd" />
+---
+
+## Modules
+
+### 1. MATLAB Simulation
+Located in `/matlab`, this script provides a high-fidelity simulation of an object moving in 3D space, tracked by both Radar and LiDAR.
+
+- **Left Panel**: 2D Top-Down Tracking (Ground Truth vs. Radar ROI vs. Fused Track).
+- **Right Panel**: 3D Environment Visualization.
+- **Performance**: Real-time RMSE calculation to quantify tracking accuracy.
+
+[View MATLAB README](./matlab/README.md) (Optional: Create this if needed)
+
+### 2. Rust Differentiable EKF
+Located in `/rust`, this library pushes sensor fusion further by using a neural network (`dfdx`) to adaptively predict the Process Noise matrix ($Q$) based on innovation residuals.
+
+- **High Performance**: Built with `nalgebra` for optimized linear algebra.
+- **Adaptive**: Learns to handle non-stationary noise environments.
+- **Tested**: Comprehensive test suite for mathematical correctness.
+
+[View Rust README](./rust/README.md)
+
+---
+
+## Performance Visualization
+
+### Real-time Tracking
+<img width="1237" height="552" alt="Fusion Visualization" src="https://github.com/user-attachments/assets/1e64c686-0e35-4440-9114-8e30bca4e5fe" />
+
+### Error Analysis
+<img width="568" height="394" alt="Tracking Performance" src="https://github.com/user-attachments/assets/20400868-9ae4-4948-8136-da5ed41fc2dd" />
+
+---
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

@@ -1,0 +1,16 @@
+# Rust
+/rust/target/
+/rust/Cargo.lock
+
+# MATLAB
+*.asv
+*.m~
+/matlab/html/
+/matlab/codegen/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/

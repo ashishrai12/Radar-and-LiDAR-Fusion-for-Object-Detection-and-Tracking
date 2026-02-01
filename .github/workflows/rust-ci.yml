@@ -1,0 +1,42 @@
+name: Rust CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'rust/**'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - 'rust/**'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+
+    - name: Build
+      run: cargo build --verbose
+      working-directory: ./rust
+
+    - name: Run tests
+      run: cargo test --verbose
+      working-directory: ./rust
+
+    - name: Check formatting
+      run: cargo fmt -- --check
+      working-directory: ./rust
+
+    - name: Clippy
+      run: cargo clippy -- -D warnings
+      working-directory: ./rust
